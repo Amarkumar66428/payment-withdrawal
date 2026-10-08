@@ -35,7 +35,7 @@ const get = async (req, res) => {
 };
 
 const list = async (req, res) => {
-  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 20, 1), 100);
+  const limit = 10; // TODO: implement pagination
   const rows = await withdrawalService.listWithdrawals(req.userId, limit);
   return successResponse(res, rows.map(withdrawalService.toDTO));
 };

@@ -2,7 +2,7 @@ const { rateLimit } = require("express-rate-limit");
 const config = require("../../config");
 const AppError = require("../utils/AppError");
 
-// block mongo operator keys like {"$gt": 0} or "a.b" in body/query
+// block mongo operator {"$gt": 0} or "a.b" in body/query for queries security
 const hasOperatorKey = (value, depth = 0) => {
   if (depth > 10) return true;
   if (Array.isArray(value))
@@ -37,7 +37,7 @@ const limiter = (windowMs, limit, keyGenerator) =>
       next(new AppError(429, "RATE_LIMITED", "Too many requests")),
   });
 
-// memory store is per instance, use redis store if running multiple instances
+// memory store is per instance, we can use redis for multiple instances
 const authLimiter = limiter(15 * 60_000, 20);
 const withdrawalLimiter = limiter(
   60_000,

@@ -17,7 +17,7 @@ const getWallet = async (userId) => {
   };
 };
 
-// used by seed script, no api for this yet
+// used by seed script, no api for this
 const credit = (walletId, userId, amount, referenceId, note) =>
   runInTransaction(async (session) => {
     const wallet = await walletRepo.credit(walletId, amount, session);

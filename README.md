@@ -274,10 +274,6 @@ The mock gateway and worker logic are also kept inside the services folder.
 
 To run the worker separately, set:
 
-```env
-RUN_WORKER_IN_API=false
-```
-
 Then start the API and worker in separate terminals.
 
 The API server must be running before executing the concurrency test.

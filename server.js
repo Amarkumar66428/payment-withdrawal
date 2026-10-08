@@ -9,7 +9,7 @@ const startServer = async () => {
     await connectDB();
 
     const server = app.listen(config.port, () => logger.info("server.started", { port: config.port }));
-    // worker runs in the same process by default, set RUN_WORKER_IN_API=false to run it separately
+    // worker runs in the same process by default, make runInApi = false
     const worker = config.worker.runInApi ? startWorker() : null;
 
     const shutdown = async (signal) => {
