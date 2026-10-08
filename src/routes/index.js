@@ -1,18 +1,24 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const userRoutes = require('./user.routes');
+const requireAuth = require("../middlewares/auth");
+const { authLimiter, withdrawalLimiter } = require("../middlewares/security");
+const authController = require("../controllers/auth.controller");
+const walletController = require("../controllers/wallet.controller");
+const withdrawalController = require("../controllers/withdrawal.controller");
 
-router.use('/user', userRoutes);
+router.post("/auth/register", authLimiter, authController.register);
+router.post("/auth/login", authLimiter, authController.login);
 
-// Health check endpoint
-router.get('/health', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'API v2 is healthy',
-    version: '1.0.0',
-    timestamp: new Date().toISOString()
-  });
-});
+router.get("/wallet", requireAuth, walletController.getBalance);
+
+router.post(
+  "/withdrawals",
+  requireAuth,
+  withdrawalLimiter,
+  withdrawalController.create,
+);
+router.get("/withdrawals", requireAuth, withdrawalController.list);
+router.get("/withdrawals/:id", requireAuth, withdrawalController.get);
 
 module.exports = router;

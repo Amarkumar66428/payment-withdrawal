@@ -1,0 +1,23 @@
+# Single-node MongoDB replica set (transactions need a replica set).
+# Uses port 27018 so it does not clash with a locally installed MongoDB on 27017.
+#   docker compose up -d
+#   MONGODB_URI=mongodb://localhost:27018/payment_withdrawal?replicaSet=rs0
+services:
+  mongo:
+    image: mongo:7.0
+    command: ["mongod", "--replSet", "rs0", "--port", "27018", "--bind_ip_all"]
+    ports:
+      - "27018:27018"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      # Initiates the replica set on first start, then just reports healthy.
+      test: >
+        mongosh --port 27018 --quiet --eval
+        "try { rs.status().ok } catch (e) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27018'}]}).ok }"
+      interval: 5s
+      timeout: 10s
+      retries: 20
+
+volumes:
+  mongo-data:

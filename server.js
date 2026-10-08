@@ -1,19 +1,30 @@
+const config = require("./config");
+const { connectDB, disconnectDB } = require("./config/database");
+const app = require("./src/app");
+const logger = require("./src/utils/logger");
+const { startWorker } = require("./src/workers/withdrawal.worker");
 
-import express from "express";
-import helmet from "helmet";
-import cors from "cors";
+const startServer = async () => {
+  try {
+    await connectDB();
 
-const app = express();
+    const server = app.listen(config.port, () => logger.info("server.started", { port: config.port }));
+    // worker runs in the same process by default, set RUN_WORKER_IN_API=false to run it separately
+    const worker = config.worker.runInApi ? startWorker() : null;
 
-app.use(helmet());
-app.use(cors());
-app.use(express.json());
+    const shutdown = async (signal) => {
+      logger.info("server.shutdown", { signal });
+      server.close();
+      if (worker) await worker.stop();
+      await disconnectDB();
+      process.exit(0);
+    };
+    process.on("SIGINT", shutdown);
+    process.on("SIGTERM", shutdown);
+  } catch (error) {
+    logger.error("server.start_failed", { error: error.message });
+    process.exit(1);
+  }
+};
 
-app.get("/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "Server is running"
-  });
-});
-
-export default app;
+startServer();

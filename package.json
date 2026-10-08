@@ -1,4 +1,21 @@
 {
+  "name": "payment-withdrawal",
+  "version": "1.0.0",
+  "description": "Secure, concurrency-safe wallet withdrawal module (Node.js + MongoDB)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "worker": "node src/workers/worker.js",
+    "db:init-rs": "node scripts/init-replica-set.js",
+    "db:setup": "node scripts/setup-db.js",
+    "db:seed": "node scripts/seed.js",
+    "reconcile": "node scripts/reconcile.js",
+    "test:concurrency": "node scripts/concurrency-test.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^18.0.6",
@@ -6,5 +23,8 @@
     "express-rate-limit": "^8.7.1",
     "helmet": "^8.3.0",
     "mongoose": "^9.11.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
